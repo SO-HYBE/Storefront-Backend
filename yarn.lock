@@ -1448,6 +1448,11 @@
   dependencies:
     "xtend" "^4.0.0"
 
+"postgres@^3.2.4":
+  "integrity" "sha512-iscysD+ZlM4A9zj0RS2zo3f4Us4yuov94Yx+p3dE1rEARaBHC8R3/gRq40KEnWp1lxjuFq9EjuAenIUsPaTaDA=="
+  "resolved" "https://registry.npmjs.org/postgres/-/postgres-3.2.4.tgz"
+  "version" "3.2.4"
+
 "prompt@^1.0.0":
   "integrity" "sha512-ZkaRWtaLBZl7KKAKndKYUL8WqNT+cQHKRZnT4RYYms48jQkFw3rrBL+/N5K/KtdEveHkxs982MX2BkDKub2ZMg=="
   "resolved" "https://registry.npmjs.org/prompt/-/prompt-1.3.0.tgz"

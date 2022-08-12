@@ -4,8 +4,6 @@ import database from '../database'
 
 export type Order = {
     id?: string,
-    product_id: string,
-    quantity?: string,
     user_id: string,
     status: string
 }
@@ -15,8 +13,8 @@ export class OrderStore {
         try {
             //@ts-ignore
             const conn = await database.connect()
-            const sql = 'INSERT INTO orders (product_id , quantity , user_id , status) VALUES ($1,$2,$3,$4) RETURNING *'
-            const result = await conn.query(sql, [order.product_id, order.quantity, order.user_id, order.status])
+            const sql = 'INSERT INTO orders (user_id , status) VALUES ($1,$2) RETURNING *'
+            const result = await conn.query(sql, [order.user_id, order.status])
             const orders = result.rows[0]
             
             conn.release();
@@ -24,6 +22,24 @@ export class OrderStore {
         } catch (err) {
             throw new Error (`Could not add order ${order.id}. Error: ${err}`)
         }
+    }
+
+    async addProduct(quantity: number, orderId: string, productId: string): Promise<Order> {
+        try {
+            const sql = 'INSERT INTO order_products (quantity, order_id, product_id) VALUES($1, $2, $3) RETURNING *'
+            //@ts-ignore
+            const conn = await database.connect()
+      
+            const result = await conn.query(sql, [quantity, orderId, productId])
+      
+            const order = result.rows[0]
+      
+            conn.release()
+      
+            return order
+          } catch (err) {
+            throw new Error(`Could not add product ${productId} to order ${orderId}: ${err}`)
+          }
     }
 
     async selectOrdersById(userId: string): Promise<Order[]> {

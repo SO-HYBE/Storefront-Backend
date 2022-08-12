@@ -31,29 +31,13 @@ const create = async (req:Request, res: Response) => {
         res.status(400)
         res.json(err)
     }
-
-    const authenticate = async (req: Request, res: Response) => {
-        const user: User = {
-          firstName: req.body.firstname,
-          lastName: req.body.lastname,
-          userName: req.body.username,
-          password: req.body.password,
-        }
-        try {
-            const u = await store.authenticate(user.userName, user.password)
-            res.json(u)
-        } catch(error) {
-            res.status(401)
-            res.json({ error })
-        }
-      }
     
 }
 
 const userRoutes = (app: express.Application) => {
     app.get('/users', verifyAuthToken, index)
     app.get('/users/:id', verifyAuthToken, show)
-    app.post('/users', verifyAuthToken, create)
+    app.post('/users', create)
 }
 
 export default userRoutes;
