@@ -5,11 +5,11 @@ import bcrypt from 'bcrypt'
 require('dotenv').config();
 
 export type User = {
-    id?: string,
-    firstName: string,
-    lastName: string,
-    userName: string,
-    password: string
+    id?: number,
+    firstname: string,
+    lastname: string,
+    username: string,
+    userpassword: string
 }
 
 
@@ -28,12 +28,14 @@ export class UserStore {
         }
     }
 
-    async show(id: string): Promise<User> {
+    async show(id: number): Promise<User> {
         try {
-        const sql = 'SELECT * FROM users WHERE id=($1)'
+
         // @ts-ignore
         const conn = await database.connect()
-    
+
+        const sql = 'SELECT * FROM users WHERE id = ($1)'
+        
         const result = await conn.query(sql, [id])
     
         conn.release()
@@ -47,35 +49,38 @@ export class UserStore {
     async create(b: User): Promise<User> {
         try {
       // @ts-ignore
-      const sql = 'INSERT INTO users (firstname, lastname, username, password) VALUES($1, $2, $3) RETURNING *'
+      
       // @ts-ignore
       const conn = await database.connect()
 
+      const sql = 'INSERT INTO users (firstname, lastname, username, userpassword) VALUES($1, $2, $3, $4) RETURNING *'
+      
       const hash = bcrypt.hashSync(
-        b.password + process.env.BCRYPT_PASSWORD,
+        b.userpassword + process.env.BCRYPT_PASSWORD,
         parseInt(process.env.SALT_ROUNDS as string)
       )
 
       const result = await conn
-          .query(sql, [b.firstName, b.lastName, b.userName, hash])
+          .query(sql, [b.firstname, b.lastname, b.username, hash])
   
-      const user = result.rows[0]
+      const user : User = result.rows[0]
   
       conn.release()
-  
-      return user
+
+        return user;
+
         } catch (err) {
-            throw new Error(`Could not create new user : ${b.userName}. Error: ${err}`)
+            throw new Error(`Could not create new user : ${b.username}. Error: ${err}`)
         }
     }
-    async authenticate(userName: string, password: string): Promise<User | null> {
+    async authenticate(username: string, userpassword: string): Promise<User | null> {
       // @ts-ignore
         const conn = await database.connect()
-        const sql = 'SELECT password_digest FROM users WHERE username=($1)'
+        const sql = 'SELECT userpassword FROM users WHERE username=($1)'
     
-        const result = await conn.query(sql, [userName])
+        const result = await conn.query(sql, [username])
     
-        console.log(password+process.env.BCRYPT_PASSWORD)
+        console.log(userpassword+process.env.BCRYPT_PASSWORD)
     
         if(result.rows.length) {
     
@@ -83,11 +88,24 @@ export class UserStore {
     
           console.log(user)
     
-          if (bcrypt.compareSync(password+process.env.BCRYPT_PASSWORD, user.password_digest)) {
+          if (bcrypt.compareSync(userpassword+process.env.BCRYPT_PASSWORD, user.userpassword)) {
             return user
           }
         }
     
         return null
+      }
+      async deleteAll(): Promise<User> {
+        try {
+          //@ts-ignore
+          const conn = await database.connect();
+          const sql = 'DELETE FROM users RETURNING *';
+          const result = await conn.query(sql);
+          conn.release();
+    
+          return result.rows;
+        } catch (err) {
+          throw new Error(`Users can not be deleted . Error: ${err}`);
+        }
       }
 }

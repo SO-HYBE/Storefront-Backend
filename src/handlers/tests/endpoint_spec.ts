@@ -15,74 +15,56 @@ describe("It tests the endpoints in the api", () => {
     
     beforeAll( async ()=>{
         await product.create({
-            name: "football",
-            price: "777",
-            category: "sports"
+            name: "Hustler's University",
+            price: "50",
+            category: "education"
         });
-    });
-
-    beforeAll( async ()=>{
         await user.create({
-            firstName: "Darren",
-            lastName: "Watkins",
-            userName: "ishowspeed",
-            password: "cristianobetter7"
-        });
+            firstname: "Darren",
+            lastname: "Watkins",
+            username: "ishowspeed",
+            userpassword: "cristianobetter7"
+        });   
+    }); 
+    afterAll( async () => {
+        await user.deleteAll();
+        await product.deleteAll();
+        await order.deleteAll();
     });
 
-    beforeAll( async ()=>{
-        await order.createOrder({
-            user_id: "1",
-            status: "new"
-        });
-    });
-
-
-    it("tests the connection of the orders endpoint",()=>{
-        it('1. tests the api endpoint status', async (): Promise<void> => {
+        it('tests the api endpoint status', async (): Promise<void> => {
             const response = await request.get('/');
             expect(response.status).toBe(200);
         });
-        it('2. tests successful access to the api endpoint ', async (): Promise<void> => {
+        it('tests successful access to the api endpoint ', async (): Promise<void> => {
             const response = await request.get('/');
             expect(response.status === 400).toBeFalsy();
         });
-        it('3. tests the orders create order endpoint status', async (): Promise<void> => {
-            const response = await request.get('/orders/:1');
+        it("tests the connection of the orders endpoint", async (): Promise<void> => {
+            const response = await request.get('/orders');
+            expect(response.status).toBe(200);
+        });        
+        it('tests the orders select order by id endpoint status', async (): Promise<void> => {
+            const response = await request.get('/orders/1');
             expect(response.status).toBe(200);
         });
-        it('4. tests the orders add product to an order endpoint status', async (): Promise<void> => {
-            const response = await request.get('/orders/:id/products');
+        it('tests the products index endpoint status', async (): Promise<void> => {
+            await product.create({
+            name: "Hustler's University",
+            price: "50",
+            category: "education"
+            });
+            const response = await request.get('/products');
             expect(response.status).toBe(200);
         });
-        it('5. tests the orders select order by id endpoint status', async (): Promise<void> => {
-            const response = await request.get('/orders/:1');
+        it('tests the products show endpoint status', async (): Promise<void> => {
+            const response = await request.get('/products/1');
             expect(response.status).toBe(200);
         });
-        it('6. tests the users endpoint status', async (): Promise<void> => {
-            const response = await request.get('/users');
-            expect(response.status).toBe(200);
-        });
-        it('7. tests the users index endpoint status', async (): Promise<void> => {
-            const response = await request.get('/users');
-            expect(response.status).toBe(200);
-        });
-        it('8. tests the users show endpoint status', async (): Promise<void> => {
-            const response = await request.get('/users/:1');
-            expect(response.status).toBe(200);
-        });
-        it('9. tests the products index and create endpoint status', async (): Promise<void> => {
-            const response = await request.get('/users');
-            expect(response.status).toBe(200);
-        });
-        it('10. tests the products show endpoint status', async (): Promise<void> => {
-            const response = await request.get('/users/:1');
-            expect(response.status).toBe(200);
-        });
-        it('11. tests the products category endpoint status', async (): Promise<void> => {
-            const response = await request.get('/users/:sports');
+        it('tests the products category endpoint status', async (): Promise<void> => {
+            const response = await request.get('/products/category/sports');
             expect(response.status).toBe(200);
         });
         
-    });
+    
 });

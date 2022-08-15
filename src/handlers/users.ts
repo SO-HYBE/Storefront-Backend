@@ -1,7 +1,8 @@
-import express, { Request, Response } from 'express'
+import express, { Router, Request, Response } from 'express'
 import { User, UserStore } from '../models/user'
 import { verifyAuthToken } from '../middlewares/authMiddleware'
-
+import jwt, { Secret } from 'jsonwebtoken'
+require("dotenv").config();
 
 const store = new UserStore()
 
@@ -11,33 +12,43 @@ const index = async (_req: Request, res: Response) => {
 }
 
 const show = async (req:Request, res:Response) => {
-    const user = await store.show(req.body.id)
-    res.json(user)
+    const userId : number = req.params.id as unknown as number
+    const user = await store.show(userId)
+    return res.json(user)
 }
 
 const create = async (req:Request, res: Response) => {
-    try {
         const user: User = {
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            userName: req.body.userName,
-            password: req.body.password,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        username: req.body.username,
+        userpassword: req.body.userpassword
         }
     
+    try {
     const crt_user = await store.create(user)
-    res.json(crt_user)
+    var token = jwt.sign({ user: crt_user },`${process.env.TOKEN_SECRET}`)
+    res.json(token)
     
-    } catch (err) {
+    //use type any to be able to see the error thrown
+    } catch (err: any) {
         res.status(400)
-        res.json(err)
+        res.json(err + user)
     }
     
 }
 
+const deleteUser = async (_req:Request, res: Response) => {
+    const user = await store.deleteAll()
+    return res.json(user)
+}
+
+
 const userRoutes = (app: express.Application) => {
-    app.get('/users', verifyAuthToken, index)
-    app.get('/users/:id', verifyAuthToken, show)
     app.post('/users', create)
+    app.get('/users',verifyAuthToken, index)
+    app.get('/users/:id', verifyAuthToken, show)
+    app.delete('/users/delete', deleteUser)
 }
 
 export default userRoutes;

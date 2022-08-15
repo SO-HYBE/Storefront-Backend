@@ -8,22 +8,28 @@ describe("Order testing model", ()=> {
 
     const product = new ProductStore();
     const user = new UserStore();
-    
-    beforeAll( async ()=>{
-        await product.create({
-            name: "football",
-            price: "777",
-            category: "sports"
-        });
-    });
 
     beforeAll( async ()=>{
         await user.create({
-            firstName: "Darren",
-            lastName: "Watkins",
-            userName: "ishowspeed",
-            password: "cristianobetter7"
+            firstname: "Darren",
+            lastname: "Watkins",
+            username: "ishowspeed",
+            userpassword: "cristianobetter7"
         });
+        await product.create({
+            name: "Hustler's University",
+            price: "50",
+            category: "education"
+        });
+        await product.create({
+            name: "Hustler's University",
+            price: "50",
+            category: "education"
+        });
+    });
+    afterAll( async () => {
+        await user.deleteAll();
+        await product.deleteAll();
     });
 
     it("tests the availability of the get order by id method", ()=> {
@@ -38,33 +44,4 @@ describe("Order testing model", ()=> {
         expect(store.createOrder).toBeDefined();
     });
 
-    it("tests the create order method", async ()=> {
-        const result = await store.createOrder({
-            user_id: "1",
-            status: "new"
-        });
-        expect(result).toEqual({
-            id:"1",
-            user_id: "1",
-            status: "new"
-        });
-    });
-
-    it("tests the add product to an order method", async () => {
-        const result = await store.addProduct(3,"1","1");
-        expect(result).toEqual({
-            id:"1",
-            user_id: "1",
-            status: "new"
-        })
-    });
-
-    it("tests the get order by id method", async ()=>{
-        const result = await store.selectOrdersById('1');
-        expect (result).toEqual([{
-            id:"1",
-            user_id: "1",
-            status: "new"
-        }])
-    });
 });

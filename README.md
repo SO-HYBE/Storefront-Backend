@@ -10,7 +10,7 @@ I learnt alot about using psql, testing with jasmine, password hashing, jwt toke
 
 I tried to be as convinient as possible in my project.
 
-THE PORT NUMBER FOR DB: 3000
+THE PORT NUMBER FOR DB: 5432
 THE PORT NUMBER FOR SERVER: 3000
 
 THE ENVIRONMENT VARIABLES ARE:
@@ -120,7 +120,8 @@ TO RUN THE CODE:
 - yarn db:up to migrate up
 - Then you can use the users, orders, and products methods
 
-TO TEST THE CODE: 
+TO TEST THE CODE:
+- type yarn db:up to initiate the migrations 
 - type yarn test in the terminal
 
 ---------------------THIS PROJECT IS FULLY MADE BY SOHIB AMER AND ALL COPYRIGHTS ARE SAVED FOR HIM---------------------
