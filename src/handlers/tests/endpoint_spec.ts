@@ -42,11 +42,13 @@ describe("It tests the endpoints in the api", () => {
         });
         it("tests the connection of the orders endpoint", async (): Promise<void> => {
             const response = await request.get('/orders');
-            expect(response.status).toBe(200);
+            //gets error 401 Unauthorized because no token passed. If token was passed the status would be 200
+            expect(response.status).toBe(401);
         });        
         it('tests the orders select order by id endpoint status', async (): Promise<void> => {
             const response = await request.get('/orders/1');
-            expect(response.status).toBe(200);
+            //gets error 401 Unauthorized because no token passed. If token was passed the status would be 200
+            expect(response.status).toBe(401);
         });
         it('tests the products index endpoint status', async (): Promise<void> => {
             await product.create({
@@ -65,6 +67,19 @@ describe("It tests the endpoints in the api", () => {
             const response = await request.get('/products/category/sports');
             expect(response.status).toBe(200);
         });
-        
-    
+        it('tests the users delete endpoint status', async (): Promise<void> => {
+            const response = await request.get('/users/delete');
+            //gets error 401 Unauthorized because no token passed. If token was passed the status would be 200
+            expect(response.status).toBe(401);
+        });
+        it('tests the users show endpoint status', async (): Promise<void> => {
+            const response = await request.get('/users/1');
+            //gets error 401 Unauthorized because no token passed. If token was passed the status would be 200
+            expect(response.status).toBe(401);
+        }); 
+        it('tests the users index endpoint status', async (): Promise<void> => {
+            const response = await request.get('/users');
+            //gets error 401 Unauthorized because no token passed. If token was passed the status would be 200
+            expect(response.status).toBe(401);
+        });    
 });

@@ -20,14 +20,22 @@ const createOrder = async (req: Request, res: Response) => {
 }
 
 const index = async (_req: Request, res: Response) => {
-    const order = await store.index()
+    try{
+        const order = await store.index()
     res.json(order)
+    } catch(err) {
+        throw new Error (`Could not show all orders. Error: ${err}`)
+    } 
 }
 
 const show = async (req:Request, res:Response) => {
     const orderId : number = req.params.id as unknown as number
+    try{     
     const order = await store.show(orderId)
     return res.json(order)
+    } catch (err) {
+        throw new Error (`Could not show order ${orderId}. Error: ${err}`)
+    }
 }
 
 const addProduct = async (req: Request, res: Response) => {
@@ -49,22 +57,33 @@ const addProduct = async (req: Request, res: Response) => {
   } 
 
 const selectOrdersById = async ( req:Request , res: Response) => {
-    const orders = await store.selectOrdersById(req.params.user_id as unknown as number)
-    res.json(orders)
+    const orderId : number = req.params.user_id as unknown as number
+    try {
+        const orders = await store.selectOrdersById(orderId)
+        res.json(orders) 
+    } catch (err) {
+        throw new Error (`Could not show order by id ${orderId}. Error: ${err}`)
+    }
+    
 };
 
 const deleteOrder = async (_req:Request, res: Response) => {
-    const user = await store.deleteAll()
-    return res.json(user)
+    try {
+        const user = await store.deleteAll()
+        return res.json(user)
+    } catch (err) {
+        throw new Error (`Could not delete all orders. Error: ${err}`)
+    }
+    
 }
 
 const orderRoutes = (app: express.Application) => {
-    app.post('/orders', createOrder)
-    app.get('/orders', index)
-    app.get('/orders/:id', show)
-    app.post('/orders/:id/products', addProduct)
+    app.post('/orders', verifyAuthToken, createOrder)
+    app.get('/orders', verifyAuthToken, index)
+    app.get('/orders/:id', verifyAuthToken, show)
+    app.post('/orders/:id/products', verifyAuthToken, addProduct)
     app.get('/orders/:user_id', verifyAuthToken, selectOrdersById)
-    app.delete('/orders/delete', deleteOrder)
+    app.delete('/orders/delete', verifyAuthToken, deleteOrder)
 };
 
 export default orderRoutes;

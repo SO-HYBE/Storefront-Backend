@@ -5,13 +5,23 @@ import { Product, ProductStore } from '../models/product'
 const store = new ProductStore()
 
 const index = async (_req : Request, res: Response) => {
-    const products = await store.index()
-    res.json(products)
+    try{
+     const products = await store.index()
+     res.json(products)   
+    } catch (err) {
+        throw new Error (`Could not show all products in index. Error: ${err}`)
+    }
 }
 
 const show = async (req: Request, res: Response) => {
-    const products = await store.show(req.params.id as unknown as number)
-    res.json(products)
+    const productId: number = req.params.id as unknown as number
+    try {
+        const products = await store.show(productId)
+        res.json(products)
+    } catch (err) {
+        throw new Error (`Could not show product by id ${productId}. Error: ${err}`)
+    }
+    
 }
 
 const create = async (req: Request, res: Response) => {
@@ -33,13 +43,23 @@ const create = async (req: Request, res: Response) => {
 }
 
 const selectCategory = async (req: Request, res: Response) => {
-    const products = await store.selectProductByCategory(req.params.category as unknown as string)
-    res.json(products)
+    const category: string = req.params.category as unknown as string
+    try{
+        const products = await store.selectProductByCategory(category)
+        res.json(products)
+    } catch (err) {
+        throw new Error(`Could not select product by category ${category}. Error: ${err}`)
+    }
 }
 
 const deleteProducts = async (_req:Request, res: Response) => {
-    const Product = await store.deleteAll()
-    return res.json(Product)
+    try{
+        const Product = await store.deleteAll()
+        return res.json(Product)
+    } catch (err) {
+        throw new Error (`Could not delete all products. Error: ${err}`)
+    }
+    
 }
 const productRoutes = (app: express.Application) => {
     app.get('/products', index)

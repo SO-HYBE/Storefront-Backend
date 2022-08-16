@@ -7,14 +7,24 @@ require("dotenv").config();
 const store = new UserStore()
 
 const index = async (_req: Request, res: Response) => {
-    const user = await store.index()
-    res.json(user)
+    try{
+        const user = await store.index()
+        res.json(user)
+    } catch (err) {
+        throw new Error (`Could not show all users in index. Error: ${err}`)
+    }
+    
 }
 
 const show = async (req:Request, res:Response) => {
     const userId : number = req.params.id as unknown as number
-    const user = await store.show(userId)
-    return res.json(user)
+    try{
+      const user = await store.show(userId)
+        return res.json(user)  
+    } catch (err) {
+        throw new Error (`Could not show user id ${userId}. Error: ${err}`)
+    }
+    
 }
 
 const create = async (req:Request, res: Response) => {
@@ -39,8 +49,12 @@ const create = async (req:Request, res: Response) => {
 }
 
 const deleteUser = async (_req:Request, res: Response) => {
-    const user = await store.deleteAll()
-    return res.json(user)
+    try{
+       const user = await store.deleteAll()
+        return res.json(user) 
+    } catch (err) {
+        throw new Error (`Could not delete all users. Error: ${err}`)
+    }
 }
 
 
